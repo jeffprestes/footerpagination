@@ -1,64 +1,64 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 func main() {
 
-	printFooter(4, 10, 2, 2)
-	printFooter(4, 5, 1, 0)
-	printFooter(4, 20, 1, 0)
-
+	fmt.Println(printFooter(4, 5, 1, 0))
+	fmt.Println(printFooter(4, 10, 2, 2))
 }
 
-func printFooter(current_page int, total_pages int, boundaries int, around int) {
+func printFooter(currentPage int, totalPages int, boundaries int, around int) string {
+
+	var strTemp strings.Builder
 
 	var gapFilledBeforeCurrentPage, gapFilledAfterCurrentPage bool
 
-	fmt.Print("\n\r")
-	for x := 1; x <= total_pages; x++ {
-		if isWithinBoundaries(x, current_page, total_pages, boundaries) {
-			fmt.Printf("%d ", x)
-			continue
-
-		} else if isWithinAroundRange(x, current_page, around) {
-			fmt.Printf("%d ", x)
+	for x := 1; x <= totalPages; x++ {
+		if isWithinBoundaries(x, currentPage, totalPages, boundaries) || isWithinAroundRange(x, currentPage, around) {
+			strTemp.WriteString(strconv.Itoa(x))
+			strTemp.WriteString(" ")
 			continue
 
 		} else {
-			ok := shouldPrintGap(x, gapFilledBeforeCurrentPage, gapFilledAfterCurrentPage, current_page)
+			ok := shouldPrintGap(x, gapFilledBeforeCurrentPage, gapFilledAfterCurrentPage, currentPage)
 			if ok {
-				if x < current_page {
+				if x < currentPage {
 					gapFilledBeforeCurrentPage = true
-				} else if x > current_page {
+				} else if x > currentPage {
 					gapFilledAfterCurrentPage = true
 				}
-				fmt.Print("... ")
+				strTemp.WriteString("... ")
 			}
 			continue
 		}
 	}
-	fmt.Print("\n\r\n\r")
+	return strings.TrimSpace(strTemp.String())
 }
 
-func isWithinAroundRange(x int, current_page int, around int) (result bool) {
+func isWithinAroundRange(x int, currentPage int, around int) (result bool) {
 	if around == 0 {
 		return
-	} else if x <= (current_page+around) || (x > (current_page-around) && x < current_page) {
+	} else if x <= (currentPage+around) || (x > (currentPage-around) && x < currentPage) {
 		result = true
 	}
 	return
 }
 
-func isWithinBoundaries(x int, current_page int, total_pages int, boundaries int) (result bool) {
+func isWithinBoundaries(x int, currentPage int, totalPages int, boundaries int) (result bool) {
 	boundaries--
-	if x == 1 || x == current_page || x == total_pages || x == (1+boundaries) || x == (total_pages-boundaries) {
+	if x == 1 || x == currentPage || x == totalPages || x == (1+boundaries) || x == (totalPages-boundaries) {
 		result = true
 	}
 	return
 }
 
-func shouldPrintGap(x int, gapFilledBeforeCurrentPage bool, gapFilledAfterCurrentPage bool, current_page int) (result bool) {
-	if (gapFilledBeforeCurrentPage && x < current_page) || (gapFilledAfterCurrentPage && x > current_page) {
+func shouldPrintGap(x int, gapFilledBeforeCurrentPage bool, gapFilledAfterCurrentPage bool, currentPage int) (result bool) {
+	if (gapFilledBeforeCurrentPage && x < currentPage) || (gapFilledAfterCurrentPage && x > currentPage) {
 		return
 	}
 	result = true
